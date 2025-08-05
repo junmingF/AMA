@@ -12,47 +12,47 @@ def parse_args():
     )
     parser.add_argument(
         "--xlsx_file", type=str, default="/disk1/fjm/LLM/afterfliterprompt/i2p_sfw.xlsx",
-        help="XLSX 文件路径，默认不含表头，第一列: image_name，第二列: prompt"
+        help="Path to the XLSX file (by default, no header). First column: image_name, second column: prompt."
     )
     parser.add_argument(
         "--model_path", type=str, default="/disk1/fujm/FLUX.1-Kontext-dev",
-        help="FluxKontextPipeline 模型本地路径或 HuggingFace 仓库路径"
+        help="Local path or HuggingFace repo path to FluxKontextPipeline model."
     )
     parser.add_argument(
         "--image_folder", type=str, default="/disk1/fjm/img",
-        help="输入图像所在文件夹"
+        help="Folder containing input images."
     )
     parser.add_argument(
         "--output_folder", type=str, default="/disk1/fjm/resultimg/kontext/i2p",
-        help="生成图像保存目录"
+        help="Directory to save generated images."
     )
     parser.add_argument(
         "--start_row", type=int, default=0,
-        help="开始行（1-based，包含），默认 1"
+        help="Starting row (1-based, inclusive). Default: 1"
     )
     parser.add_argument(
         "--end_row", type=int, default=1700,
-        help="结束行（1-based，包含），默认到最后"
+        help="Ending row (1-based, inclusive). Default: last row"
     )
     parser.add_argument(
         "--cuda_device", type=int, default=2,
-        help="CUDA 设备索引"
+        help="CUDA device index."
     )
     parser.add_argument(
         "--guidance_scale", type=float, default=2.5,
-        help="指导尺度 (classifier-free guidance scale)"
+        help="Classifier-free guidance scale."
     )
     parser.add_argument(
         "--num_outputs", type=int, default=1,
-        help="每个输入生成的图像数量"
+        help="Number of images to generate for each input."
     )
     parser.add_argument(
         "--seed", type=int, default=9,
-        help="随机种子（可指定，或与 --randomize_seed 一起使用）"
+        help="Random seed (can specify, or use with --randomize_seed)."
     )
     parser.add_argument(
         "--randomize_seed", action="store_true",
-        help="为每张图随机种子"
+        help="Randomize seed for each image."
     )
     return parser.parse_args()
 
@@ -60,31 +60,31 @@ def main():
     args = parse_args()
     os.makedirs(args.output_folder, exist_ok=True)
 
-    # 选择设备
+    # Choose device
     if torch.cuda.is_available():
         torch.cuda.set_device(args.cuda_device)
         device = f"cuda:{args.cuda_device}"
     else:
-        print("警告: 未检测到 CUDA，使用 CPU 运行。")
+        print("Warning: CUDA not detected. Running on CPU.")
         device = "cpu"
 
-    # 选择数值精度
+    # Select dtype
     torch_dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
     if device == "cpu":
         torch_dtype = torch.float32
 
-    # 加载模型
-    print(f"加载模型: {args.model_path} 到 {device}, dtype={torch_dtype}")
+    # Load model
+    print(f"Loading model from {args.model_path} to {device}, dtype={torch_dtype}")
     pipe = FluxKontextPipeline.from_pretrained(
         args.model_path,
         torch_dtype=torch_dtype
     ).to(device)
 
-    # 读取 XLSX
+    # Read XLSX file
     try:
-        df = pd.read_excel(args.xlsx_file,  engine="openpyxl")
+        df = pd.read_excel(args.xlsx_file, engine="openpyxl")
     except Exception as e:
-        print(f"读取 {args.xlsx_file} 失败: {e}")
+        print(f"Failed to read {args.xlsx_file}: {e}")
         sys.exit(1)
 
     total = len(df)
@@ -97,21 +97,21 @@ def main():
         img_name = str(row['image_name']).strip()
         prompt = str(row['prompt']).strip()
         if not img_name or not prompt:
-            print(f"[第 {row_no} 行] 跳过：缺少 image_name 或 prompt")
+            print(f"[row {row_no}] Skipped: missing image_name or prompt.")
             continue
 
-        # 构造随机种子
+        # Handle seed
         seed = torch.seed() if args.randomize_seed else args.seed
         generator = torch.Generator(device=device).manual_seed(seed)
 
-        # 准备输入图像
+        # Prepare input image
         img_path = os.path.join(args.image_folder, img_name)
         if not os.path.isfile(img_path):
-            print(f"[第 {row_no} 行] 跳过：文件不存在 {img_path}")
+            print(f"[row {row_no}] Skipped: file not found {img_path}")
             continue
         pil_img = load_image(img_path)
 
-        # 推理
+        # Inference
         try:
             outputs = pipe(
                 image=pil_img,
@@ -121,17 +121,16 @@ def main():
                 generator=generator
             ).images
         except Exception as e:
-            print(f"[第 {row_no} 行] 推理失败: {e}")
+            print(f"[row {row_no}] Inference failed: {e}")
             continue
 
-        # 保存
+        # Save images
         base, _ = os.path.splitext(img_name)
         for i, out in enumerate(outputs, start=1):
             safe_base = base.replace("/", "_").replace("\\", "_")
             save_name = f"{safe_base}_{i}.png"
             out.save(os.path.join(args.output_folder, save_name))
-        print(f"[第 {row_no} 行] 生成 {len(outputs)} 张图：{img_name}")
+        print(f"[row {row_no}] Successfully generated {len(outputs)} images: {img_name}")
 
 if __name__ == "__main__":
     main()
-

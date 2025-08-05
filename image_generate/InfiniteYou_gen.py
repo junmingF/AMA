@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 import argparse
 import os
@@ -13,67 +12,84 @@ from pipelines.pipeline_infu_flux import InfUFluxPipeline
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Batch-generate images with InfiniteYou-FLUX pipeline based on prompts in a CSV file."
+        description="Batch generate images with InfiniteYou-FLUX pipeline based on prompts in an Excel file."
     )
     parser.add_argument(
         "--image_folder", type=str, default="/disk1/fjm/img",
-        help="包含所有参考照片的文件夹路径"
+        help="Path to the folder containing all reference photos."
     )
     parser.add_argument(
         "--csv_file", type=str, default="/disk1/fjm/clipscore/afterfliterprompt/mma_sfw.xlsx",
-        help="CSV 文件路径，第一列 image_name，对应照片文件名；第二列 prompt，对应生成提示"
+        help="Path to the Excel file. First column: image_name (photo file name); Second column: prompt (text prompt for generation)."
     )
-
     parser.add_argument(
         "--start_row", type=int, default=0,
-        help="处理 CSV 的起始行（1-based，包含此行），默认 1"
+        help="Index of the starting row in the Excel file to process (1-based, inclusive). Default: 1"
     )
     parser.add_argument(
         "--end_row", type=int, default=1700,
-        help="处理 CSV 的结束行（1-based，包含此行），默认处理到最后一行"
+        help="Index of the ending row in the Excel file to process (1-based, inclusive). Default: last row"
     )
     parser.add_argument(
         "--out_results_dir", type=str, default="/disk1/fjm/resultimg/infinite/mma",
-        help="生成图片保存目录"
+        help="Directory to save the generated images."
     )
-    parser.add_argument("--base_model_path", type=str,
-        default="/disk1/fujm/FLUX.1-dev",
-        help="FLUX 基础模型路径"
+    parser.add_argument(
+        "--base_model_path", type=str, default="/disk1/fujm/FLUX.1-dev",
+        help="Path to the base FLUX model."
     )
     parser.add_argument(
         "--infu_flux_version", default="v1.0",
-        help="InfiniteYou-FLUX 版本 (目前仅 v1.0)"
+        help="InfiniteYou-FLUX version (currently only v1.0)."
     )
     parser.add_argument(
         "--model_version", default="aes_stage2",
         choices=["aes_stage2", "sim_stage1"],
-        help="模型阶段版本"
+        help="Version of model stage."
     )
-    parser.add_argument("--cuda_device", default=0, type=int,
-        help="使用的 CUDA 设备编号"
+    parser.add_argument(
+        "--cuda_device", default=0, type=int,
+        help="CUDA device index to use."
     )
-    parser.add_argument("--seed", default=9, type=int,
-        help="随机种子 (0 表示每张图随机)")
-    parser.add_argument("--guidance_scale", default=3.5, type=float,
-        help="classifier-free guidance 强度"
+    parser.add_argument(
+        "--seed", default=9, type=int,
+        help="Random seed (0 means random per image)."
     )
-    parser.add_argument("--num_steps", default=30, type=int,
-        help="扩散步数"
+    parser.add_argument(
+        "--guidance_scale", default=3.5, type=float,
+        help="classifier-free guidance strength."
     )
-    parser.add_argument("--infusenet_conditioning_scale", default=1.0, type=float)
-    parser.add_argument("--infusenet_guidance_start", default=0.0, type=float)
-    parser.add_argument("--infusenet_guidance_end", default=1.0, type=float)
-    parser.add_argument("--enable_realism_lora", action="store_true",
-        help="启用 realism LoRA"
+    parser.add_argument(
+        "--num_steps", default=30, type=int,
+        help="Number of diffusion steps."
     )
-    parser.add_argument("--enable_anti_blur_lora", action="store_true",
-        help="启用 anti_blur LoRA"
+    parser.add_argument(
+        "--infusenet_conditioning_scale", default=1.0, type=float,
+        help="InfuseNet conditioning scale."
     )
-    parser.add_argument("--quantize_8bit", action="store_true",
-        help="启用 8-bit 量化"
+    parser.add_argument(
+        "--infusenet_guidance_start", default=0.0, type=float,
+        help="InfuseNet guidance start."
     )
-    parser.add_argument("--cpu_offload", action="store_true",
-        help="启用 CPU offload 减少显存占用"
+    parser.add_argument(
+        "--infusenet_guidance_end", default=1.0, type=float,
+        help="InfuseNet guidance end."
+    )
+    parser.add_argument(
+        "--enable_realism_lora", action="store_true",
+        help="Enable realism LoRA."
+    )
+    parser.add_argument(
+        "--enable_anti_blur_lora", action="store_true",
+        help="Enable anti_blur LoRA."
+    )
+    parser.add_argument(
+        "--quantize_8bit", action="store_true",
+        help="Enable 8-bit quantization."
+    )
+    parser.add_argument(
+        "--cpu_offload", action="store_true",
+        help="Enable CPU offload to reduce VRAM usage."
     )
     return parser.parse_args()
 
@@ -85,7 +101,7 @@ def main():
     torch.cuda.set_device(args.cuda_device)
     device = f"cuda:{args.cuda_device}"
 
-    # 加载 InfiniteYou-FLUX 管道
+    # Load InfiniteYou-FLUX pipeline
     infu_model_path = os.path.join(
         "/disk1/fujm/InfiniteYou_model",
         f"infu_flux_{args.infu_flux_version}",
@@ -103,7 +119,7 @@ def main():
         cpu_offload=args.cpu_offload,
     )
 
-    # 可选 LoRA
+    # Optional LoRA
     lora_dir = "/disk1/fujm/InfiniteYou_model/supports/optional_loras"
     if not os.path.isdir(lora_dir):
         lora_dir = "./models/InfiniteYou/supports/optional_loras"
@@ -114,11 +130,11 @@ def main():
         loras.append([os.path.join(lora_dir, "flux_anti_blur_lora.safetensors"), "anti_blur", 1.0])
     pipe.load_loras(loras)
   
-    # 读取 XLSX（不用读 csv 了）
+    # Read Excel file (not CSV)
     try:
         df = pd.read_excel(args.csv_file, dtype=str, engine="openpyxl")
     except Exception as e:
-        print(f"读取 xlsx 文件出错: {e}")
+        print(f"Error reading Excel file: {e}")
         sys.exit(1)
 
     total = len(df)
@@ -128,22 +144,22 @@ def main():
 
     for i, row in df.iterrows():
         try:
-            image_name = str(row['image_name']).strip()  # Excel第7列
-            prompt_text = str(row['prompt']).strip() # Excel第6列
+            image_name = str(row['image_name']).strip()
+            prompt_text = str(row['prompt']).strip()
         except Exception:
-            print(f"[Row {i+1}] 跳过：未能正确读取 image_name 或 prompt_text")
+            print(f"[Row {i+1}] Skipped: Unable to correctly read image_name or prompt_text")
             continue
 
         img_path = os.path.join(args.image_folder, image_name)
         if not os.path.isfile(img_path):
-            print(f"[Row {i+1}] 跳过：未找到文件 {image_name}")
+            print(f"[Row {i+1}] Skipped: file not found {image_name}")
             continue
 
-        # 准备随机种子
+        # Handle random seed
         seed = random.randint(0, 0xFFFFFFFF) if args.seed == 0 else args.seed
         gen = torch.Generator(device=device).manual_seed(seed)
 
-        # 打开图像并调用管道
+        # Open image and call pipeline
         img = Image.open(img_path).convert("RGB")
         out = pipe(
             id_image=img,
@@ -157,13 +173,13 @@ def main():
             cpu_offload=args.cpu_offload,
         )
 
-        # 保存结果
+        # Save result
         base, _ = os.path.splitext(image_name)
         safe_prompt = prompt_text.replace("/", "_")[:50]
         out_name = f"{base}_{safe_prompt}_seed{seed}.png"
         out_path = os.path.join(args.out_results_dir, out_name)
         out.save(out_path)
-        print(f"[Row {i+1}] 生成：{out_path}")
+        print(f"[Row {i+1}] Generated: {out_path}")
 
 if __name__ == "__main__":
     main()

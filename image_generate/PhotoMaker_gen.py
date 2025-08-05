@@ -19,48 +19,48 @@ MAX_SEED = np.iinfo(np.int32).max
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Batch-generate images using PhotoMaker pipeline based on prompts in an XLSX file."
+        description="Batch-generate images using the PhotoMaker pipeline based on prompts in an XLSX file."
     )
     parser.add_argument("--csv_file", type=str, default="/disk1/fjm/UniPortrait/assets/faceprompt.xlsx",
-                        help="Path to XLSX file with at least 7 columns (image_name in column 7, prompt in column 6)")
+                        help="Path to XLSX file (no header). At least 7 columns: image_name (col 7), prompt (col 6).")
     parser.add_argument("--image_folder", type=str, default="/disk1/fjm/img",
-                        help="Folder containing input images referenced in XLSX")
+                        help="Folder containing input images referenced in XLSX.")
     parser.add_argument("--output_folder", type=str, default="/disk1/fjm/resultimg",
-                        help="Directory to save generated images")
+                        help="Directory to save the generated images.")
     parser.add_argument("--start_row", type=int, default=0,
-                        help="1-based index of the first row to process (inclusive)")
+                        help="1-based index of the first row to process (inclusive).")
     parser.add_argument("--end_row", type=int, default=5,
-                        help="1-based index of the last row to process (inclusive). Default=last row")
+                        help="1-based index of the last row to process (inclusive). Default: last row.")
     parser.add_argument("--style_name", choices=list(styles.keys()),
-                        default="Photographic (Default)", help="Style template name")
+                        default="Photographic (Default)", help="Name of the style template.")
     parser.add_argument("--aspect_ratio", choices=list(aspect_ratios.keys()),
-                        default=list(aspect_ratios.keys())[0], help="Output aspect ratio label")
+                        default=list(aspect_ratios.keys())[0], help="Output aspect ratio label.")
     parser.add_argument("--negative_prompt", type=str, default=(
         "lowres, bad anatomy, bad hands, text, error, missing fingers, "
         "extra digit, fewer digits, cropped, worst quality, low quality, normal quality, "
         "jpeg artifacts, signature, watermark, username, blurry"
-    ), help="Negative prompt to apply to all generations")
+    ), help="Negative prompt to apply for all generations.")
     parser.add_argument("--num_steps", type=int, default=50,
-                        help="Number of diffusion sampling steps")
+                        help="Number of diffusion sampling steps.")
     parser.add_argument("--style_strength_ratio", type=int, default=20,
-                        help="Style strength ratio (%)")
+                        help="Style strength ratio (percentage).")
     parser.add_argument("--num_outputs", type=int, default=2,
-                        help="Number of images to generate per input")
+                        help="Number of images to generate per input.")
     parser.add_argument("--guidance_scale", type=float, default=5.0,
-                        help="Classifier-free guidance scale")
+                        help="Classifier-free guidance scale.")
     parser.add_argument("--seed", type=int, default=9,
-                        help="Random seed (overridden if --randomize_seed is set)")
+                        help="Random seed (overridden if --randomize_seed is set).")
     parser.add_argument("--randomize_seed", action="store_true",
-                        help="If set, pick a random seed for each image")
+                        help="If set, use a random seed for each image.")
     parser.add_argument("--base_model_path", type=str,
                         default="/disk1/fujm/photomaker_model/RealVisXL_V4.0",
-                        help="Path to the base SDXL model")
+                        help="Path to the base SDXL model.")
     parser.add_argument("--adapter_path", type=str,
                         default="/disk1/fujm/photomaker_model/t2i-adapter-sketch-sdxl-1.0",
-                        help="Path to the T2I-Adapter checkpoint directory")
+                        help="Path to the T2I-Adapter checkpoint directory.")
     parser.add_argument("--photomaker_ckpt", type=str,
                         default="/disk1/fujm/photomaker_model/PhotoMaker-V2/photomaker-v2.bin",
-                        help="Path to the PhotoMaker adapter .bin file")
+                        help="Path to the PhotoMaker adapter .bin file.")
     return parser.parse_args()
 
 def apply_style(style_name: str, positive: str, negative: str):
@@ -114,11 +114,11 @@ def main():
     pipe.fuse_lora()
     pipe.to(device)
 
-    # 读取XLSX（无表头推测。每一行下标从0开始，第6列=row[5]为prompt，第7列=row[6]为图片名）
+    # Read XLSX (no header. Row index from 0, prompt in col 6=row[5], image in col 7=row[6])
     try:
         df = pd.read_excel(args.csv_file, header=None, engine="openpyxl")
     except Exception as e:
-        print(f"读取 xlsx 文件出错: {e}")
+        print(f"Error reading xlsx file: {e}")
         sys.exit(1)
     total_rows = len(df)
     start = max(0, args.start_row - 1)
@@ -127,39 +127,39 @@ def main():
 
     for idx, row in df.iterrows():
         try:
-            image_name = str(row[6])      # 第7列
-            prompt_text = str(row[5])     # 第6列
+            image_name = str(row[6])      # Col 7
+            prompt_text = str(row[5])     # Col 6
         except Exception:
-            print(f"[Row {idx+1}] 跳过：读取 image_name 或 prompt_text 失败")
+            print(f"[Row {idx+1}] Skipped: Failed to read image_name or prompt_text.")
             continue
 
-        # Setting seed
+        # Set random seed
         seed = random.randint(0, MAX_SEED) if args.randomize_seed else args.seed
         generator = torch.Generator(device=device).manual_seed(seed)
 
-        # 检查trigger word
+        # Check trigger word
         image_token_id = pipe.tokenizer.convert_tokens_to_ids(pipe.trigger_word)
         input_ids = pipe.tokenizer.encode(prompt_text)
         if image_token_id not in input_ids:
-            print(f"[Row {idx+1}] Skipping '{image_name}': missing trigger word 'img'")
+            print(f"[Row {idx+1}] Skipping '{image_name}': missing trigger word 'img'.")
             continue
         if input_ids.count(image_token_id) > 1:
-            print(f"[Row {idx+1}] Skipping '{image_name}': multiple trigger words")
+            print(f"[Row {idx+1}] Skipping '{image_name}': multiple trigger words.")
             continue
 
         img_path = os.path.join(args.image_folder, image_name)
         if not os.path.isfile(img_path):
-            print(f"[Row {idx+1}] Skipping '{image_name}': file not found")
+            print(f"[Row {idx+1}] Skipping '{image_name}': file not found.")
             continue
         pil_img = load_image(img_path)
         np_img = np.array(pil_img)[:, :, ::-1]
         faces = analyze_faces(face_detector, np_img)
         if not faces:
-            print(f"[Row {idx+1}] Skipping '{image_name}': no face detected")
+            print(f"[Row {idx+1}] Skipping '{image_name}': no face detected.")
             continue
         id_embed = torch.from_numpy(faces[0]['embedding']).unsqueeze(0).to(device)
 
-        # 准备prompt、aspect ratio、start_merge_step
+        # Prepare prompt, aspect ratio, start_merge_step
         styled_p, styled_n = apply_style(args.style_name, prompt_text, args.negative_prompt)
         width, height = aspect_ratios[args.aspect_ratio]
         start_merge = int(args.style_strength_ratio / 100 * args.num_steps)
@@ -181,11 +181,11 @@ def main():
 
         base, _ = os.path.splitext(image_name)
         for i, out in enumerate(outputs, start=1):
-            # 文件名安全处理，防止太长或包含特殊符号
+            # Make filename safe, prevent too long or with special symbols
             safe_prompt = styled_p.replace("/", "_").replace("\\", "_")[:40]
             save_path = os.path.join(args.output_folder, f"{i}_{base}_{safe_prompt}.png")
             out.save(save_path)
-        print(f"[Row {idx+1}] Generated {len(outputs)} images for '{image_name}'")
+        print(f"[Row {idx+1}] Generated {len(outputs)} images for '{image_name}'.")
 
 if __name__ == "__main__":
     main()
