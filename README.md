@@ -21,6 +21,8 @@
   <img src="./img/frame.jpg" alt="Framework Diagram" width="100%" style="border-radius:8px;box-shadow:0 2px 8px #888;">
 </div>
 
+![frame](./img/frame.jpg)
+
 
 The proposed framework for generating **Misbinding Prompt** evaluation set and evaluating the safety of identity-preserving models.  
 The framework consists of four stages:
