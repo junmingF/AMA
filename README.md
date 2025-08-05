@@ -12,7 +12,6 @@
     - [Sensitive Term Expansion](#sensitive-term-expansion)
     - [Attribute Misbinding Attack](#attribute-misbinding-attack)
     - [Attribute Binding Safety Score](#attribute-binding-safety-score)
-    - [TEST](#test)
 
 
 
@@ -124,9 +123,7 @@ python Attribute_Misbinding_Attack/abss_calculate.py \
     --end y
 
 ```
-### TEST
 
-is a new test
 
 
 
