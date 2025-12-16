@@ -1,6 +1,13 @@
 # Unveiling the Attribute Misbinding Threat in Identity-Preserving Models
+
+
+<a href=''><img src='https://img.shields.io/badge/Project-Page-green'></a>
+<a href='https://openreview.net/forum?id=IRwQKxJEH9'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
+
+
 <font size=4><b> Table of Contents </b></font>
 
+<a href='https://aigcdesigngroup.github.io/UniPortrait-Page/'><img src='https://img.shields.io/badge/Project-Page-green'></a>
 - [Unveiling the Attribute Misbinding Threat in Identity-Preserving Models](#unveiling-the-attribute-misbinding-threat-in-identity-preserving-models)
   - [Framework Overview](#framework-overview)
   - [Attack Demonstration](#attack-demonstration)
@@ -12,6 +19,7 @@
     - [Sensitive Term Expansion](#sensitive-term-expansion)
     - [Attribute Misbinding Attack](#attribute-misbinding-attack)
     - [Attribute Binding Safety Score](#attribute-binding-safety-score)
+  - [Cite](#cite)
 
 
 
@@ -119,6 +127,20 @@ python Attribute_Misbinding_Attack/abss_calculate.py \
     --start x \
     --end y
 
+```
+
+
+## Cite
+
+If you find UniPortrait useful for your research and applications, please cite us using this BibTeX:
+
+```bibtex
+@article{JunmingFu2026AttributeMisbinding,
+  author    = {Junming Fu, Jishen Zeng, Yi Jiang, Peiyu Zhuang, Baoying Chen, Siyu Lu, Jianquan Yang},
+  title     = {Unveiling the Attribute Misbinding Threat in Identity-Preserving Models},
+  journal   = {AAAI},
+  year      = {2026},
+}
 ```
 
 
