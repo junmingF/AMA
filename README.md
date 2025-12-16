@@ -1,5 +1,5 @@
 <div align="center">
-<h1>Unveiling the Attribute Misbinding Threat in Identity-Preserving Models</h1>
+<h1>Unveiling the Attribute Misbinding Threat in <br> Identity-Preserving Models</h1>
 
 <a href=''><img src='https://img.shields.io/badge/Project-Page-green'></a>
 <a href='https://openreview.net/forum?id=IRwQKxJEH9'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
