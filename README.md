@@ -1,5 +1,5 @@
 <div align="center">
-<h1>Unveiling the Attribute Misbinding Threat in <br> Identity-Preserving Models</h1>
+<h1>Unveiling the Attribute Misbinding Threat in <br>Identity-Preserving Models</h1>
 
 <a href=''><img src='https://img.shields.io/badge/Project-Page-green'></a>
 <a href='https://openreview.net/forum?id=IRwQKxJEH9'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
@@ -17,6 +17,7 @@
   - [Sensitive Term Expansion](#sensitive-term-expansion)
   - [Attribute Misbinding Attack](#attribute-misbinding-attack)
   - [Attribute Binding Safety Score](#attribute-binding-safety-score)
+- [**Acknowledgements**](#acknowledgements)
 - [Cite](#cite)
 
 
@@ -127,6 +128,8 @@ python Attribute_Misbinding_Attack/abss_calculate.py \
 
 ```
 
+## **Acknowledgements**
+This research would not have been possible without the generous contributions from the open-source community. We gratefully acknowledge the developers of the identity-preserving models (e.g., UniPortrait, PuLID, PhotoMaker) and the safety mechanisms (text filters and evaluation metrics) that served as the foundation for our experiments. Regarding data resources, we thank the authors of StyleGAN2 and CelebA-Dialog for providing high-quality synthesized and annotated face images.
 
 ## Cite
 
