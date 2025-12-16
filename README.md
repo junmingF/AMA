@@ -1,25 +1,23 @@
-# Unveiling the Attribute Misbinding Threat in Identity-Preserving Models
-
+<div align="center">
+<h1>Unveiling the Attribute Misbinding Threat in Identity-Preserving Models</h1>
 
 <a href=''><img src='https://img.shields.io/badge/Project-Page-green'></a>
 <a href='https://openreview.net/forum?id=IRwQKxJEH9'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
 
+</div>
 
 <font size=4><b> Table of Contents </b></font>
-
-<a href='https://aigcdesigngroup.github.io/UniPortrait-Page/'><img src='https://img.shields.io/badge/Project-Page-green'></a>
-- [Unveiling the Attribute Misbinding Threat in Identity-Preserving Models](#unveiling-the-attribute-misbinding-threat-in-identity-preserving-models)
-  - [Framework Overview](#framework-overview)
-  - [Attack Demonstration](#attack-demonstration)
-  - [Identity-Preserving Models](#identity-preserving-models)
-  - [Text Filter](#text-filter)
-  - [Safety Evaluation](#safety-evaluation)
-  - [Quick Start](#quick-start)
-    - [Installation](#installation)
-    - [Sensitive Term Expansion](#sensitive-term-expansion)
-    - [Attribute Misbinding Attack](#attribute-misbinding-attack)
-    - [Attribute Binding Safety Score](#attribute-binding-safety-score)
-  - [Cite](#cite)
+- [Framework Overview](#framework-overview)
+- [Attack Demonstration](#attack-demonstration)
+- [Identity-Preserving Models](#identity-preserving-models)
+- [Text Filter](#text-filter)
+- [Safety Evaluation](#safety-evaluation)
+- [Quick Start](#quick-start)
+  - [Installation](#installation)
+  - [Sensitive Term Expansion](#sensitive-term-expansion)
+  - [Attribute Misbinding Attack](#attribute-misbinding-attack)
+  - [Attribute Binding Safety Score](#attribute-binding-safety-score)
+- [Cite](#cite)
 
 
 
