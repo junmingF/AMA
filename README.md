@@ -6,7 +6,7 @@
 
 </div>
 
-<font size=4><b> Table of Contents </b></font>
+<!-- <font size=4><b> Table of Contents </b></font>
 - [Framework Overview](#framework-overview)
 - [Attack Demonstration](#attack-demonstration)
 - [Identity-Preserving Models](#identity-preserving-models)
@@ -18,7 +18,7 @@
   - [Attribute Misbinding Attack](#attribute-misbinding-attack)
   - [Attribute Binding Safety Score](#attribute-binding-safety-score)
 - [**Acknowledgements**](#acknowledgements)
-- [Cite](#cite)
+- [Cite](#cite) -->
 
 
 
