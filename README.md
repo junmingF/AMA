@@ -128,7 +128,7 @@ python Attribute_Misbinding_Attack/abss_calculate.py \
 
 ```
 
-## **Acknowledgements**
+## Acknowledgements
 This research would not have been possible without the generous contributions from the open-source community. We gratefully acknowledge the developers of the identity-preserving models (e.g., UniPortrait, PuLID, PhotoMaker) and the safety mechanisms (text filters and evaluation metrics) that served as the foundation for our experiments. Regarding data resources, we thank the authors of StyleGAN2 and CelebA-Dialog for providing high-quality synthesized and annotated face images.
 
 ## Cite
