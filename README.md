@@ -6,6 +6,8 @@
 
 </div>
 
+> 🎉🎉🎉 **Our paper has been accepted by AAAI 2026 Oral 🏆!**
+
 <!-- <font size=4><b> Table of Contents </b></font>
 - [Framework Overview](#framework-overview)
 - [Attack Demonstration](#attack-demonstration)
