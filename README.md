@@ -2,7 +2,7 @@
 <h1>Unveiling the Attribute Misbinding Threat in <br>Identity-Preserving Models</h1>
 
 <a href='https://junmingf.github.io/AMApage/'><img src='https://img.shields.io/badge/Project-Page-green'></a>
-<a href='https://openreview.net/forum?id=IRwQKxJEH9'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
+<a href='https://arxiv.org/abs/2512.15818'><img src='https://img.shields.io/badge/Technique-Report-red'></a>
 
 </div>
 
