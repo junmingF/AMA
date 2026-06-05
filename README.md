@@ -140,13 +140,14 @@ This research would not have been possible without the generous contributions fr
 If you find UniPortrait useful for your research and applications, please cite us using this BibTeX:
 
 ```bibtex
-@misc{fu2025unveiling,
-      title={Unveiling the Attribute Misbinding Threat in Identity-Preserving Models}, 
-      author={Junming Fu and Jishen Zeng and Yi Jiang and Peiyu Zhuang and Baoying Chen and Siyu Lu and Jianquan Yang},
-      year={2025},
-      eprint={2512.15818},
-      archivePrefix={arXiv},
-      primaryClass={cs.CR}
+@article{fu2026unveiling,
+title={Unveiling the Attribute Misbinding Threat in Identity-Preserving Models},
+author={Fu, Junming and Zeng, Jishen and Jiang, Yi and Zhuang, Peiyu and Chen, Baoying and Lu, Siyu and Yang, Jianquan},
+journal={Proceedings of the AAAI Conference on Artificial Intelligence},
+volume={40},
+number={1},
+pages={283--291},
+year={2026}
 }
 ```
 
